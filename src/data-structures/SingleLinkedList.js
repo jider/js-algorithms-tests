@@ -12,20 +12,29 @@ export class SingleLinkedList {
     this.tail = null
   }
 
-  push (value) {
-    const newNode = new Node(value)
+  get (idx) {
+    if (idx < 0 || idx >= this.length) return null
 
-    if (!this.head) {
-      this.head = newNode
-      this.tail = newNode
-    } else {
-      this.tail.next = newNode
-      this.tail = newNode
+    let counter = 0
+    let node = this.head
+    while (counter < idx) {
+      node = node.next
+      counter++
     }
+    return node
+  }
 
+  insert (idx, value) {
+    if (idx < 0 || idx > this.length) return false
+    if (idx === 0) return !!this.unshift(value)
+    if (idx === this.length) return !!this.push(value)
+
+    const prevNode = this.get(idx - 1)
+    const newNode = new Node(value)
+    newNode.next = prevNode.next
+    prevNode.next = newNode
     this.length += 1
-
-    return this
+    return true
   }
 
   pop () {
@@ -47,6 +56,59 @@ export class SingleLinkedList {
     return currentNode
   }
 
+  push (value) {
+    const newNode = new Node(value)
+
+    if (!this.head) {
+      this.head = newNode
+      this.tail = newNode
+    } else {
+      this.tail.next = newNode
+      this.tail = newNode
+    }
+
+    this.length += 1
+
+    return this
+  }
+
+  remove (idx) {
+    if (idx < 0 || idx >= this.length) return undefined
+    if (idx === 0) return !!this.shift()
+    if (idx === this.length - 1) return !!this.pop()
+
+    const prevNode = this.get(idx - 1)
+    const nodeToRemove = prevNode.next
+    prevNode.next = nodeToRemove.next
+    this.length -= 1
+    return nodeToRemove
+  }
+
+  reverse () {
+    let node = this.head
+    this.head = this.tail
+    this.tail = node
+
+    let prevNode = null
+    let nextNode = null
+    while (node) {
+      nextNode = node.next
+      node.next = prevNode
+      prevNode = node
+      node = nextNode
+    }
+    return this
+  }
+
+  set (idx, value) {
+    const node = this.get(idx)
+    if (node) {
+      node.value = value
+      return true
+    }
+    return false
+  }
+
   shift () {
     if (!this.head) return undefined
 
@@ -58,6 +120,14 @@ export class SingleLinkedList {
     }
 
     return currentHead
+  }
+
+  traverse () {
+    let currentNode = this.head
+    while (currentNode) {
+      console.log(currentNode.value)
+      currentNode = currentNode.next
+    }
   }
 
   unshift (value) {
@@ -72,13 +142,5 @@ export class SingleLinkedList {
     this.length += 1
 
     return this
-  }
-
-  traverse () {
-    let currentNode = this.head
-    while (currentNode) {
-      console.log(currentNode.value)
-      currentNode = currentNode.next
-    }
   }
 }
